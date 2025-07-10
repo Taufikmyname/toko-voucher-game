@@ -14,4 +14,10 @@ class Product extends Model
     {
         return $this->belongsTo(Game::class);
     }
+
+    public function vouchers()
+    {
+        return $this->hasMany(Voucher::class);
+    }
+
 }

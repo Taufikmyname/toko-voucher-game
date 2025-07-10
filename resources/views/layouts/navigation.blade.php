@@ -66,6 +66,9 @@
                                 <x-dropdown-link :href="route('admin.users.index')">
                                     {{ __('Manajemen Pengguna') }}
                                 </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.vouchers.index')">
+                                    {{ __('Manajemen Stok Voucher') }}
+                                </x-dropdown-link>
                             @endif
 
                             <div class="border-t border-gray-200"></div>

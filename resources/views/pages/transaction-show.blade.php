@@ -19,6 +19,14 @@
                     <p class="mb-2"><strong>Produk:</strong> {{ $transaction->product->name }} ({{ $transaction->product->game->name }})</p>
                     <p class="mb-2"><strong>User ID:</strong> {{ $transaction->game_user_id }}</p>
                     <p class="mb-4"><strong>Total Bayar:</strong> Rp {{ number_format($transaction->total_price) }}</p>
+                    
+                    @if($transaction->voucher_code)
+                        <div class="mt-4 pt-4 border-t">
+                            <p class="text-sm text-gray-500">Kode Voucher Anda:</p>
+                            <p class="text-2xl font-bold font-mono bg-gray-100 p-3 rounded-lg inline-block mt-1">{{ $transaction->voucher_code }}</p>
+                        </div>
+                    @endif
+                    
                     <a href="{{ route('home') }}" class="inline-block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
                         Kembali ke Beranda
                     </a>

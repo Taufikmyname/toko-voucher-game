@@ -74,6 +74,26 @@
                             <dd class="mt-1 text-sm text-gray-900">{{ $transaction->user->email ?? 'Tidak terdaftar' }}</dd>
                         </div>
                     </div>
+
+                    <!-- Bagian Aksi Admin -->
+                    <div class="p-6 border-t">
+                        @if($transaction->status == 'success' && $transaction->voucher_code == null)
+                            <form action="{{ route('admin.transactions.sendVoucher', $transaction) }}" method="POST" onsubmit="return confirm('Anda yakin ingin mengirimkan voucher? Aksi ini tidak dapat dibatalkan.');">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                                    Kirim Kode Voucher ke Pelanggan
+                                </button>
+                            </form>
+                        @elseif($transaction->voucher_code)
+                            <div class="p-4 bg-green-100 text-green-800 rounded-md">
+                                <p><strong>Voucher Terkirim:</strong> {{ $transaction->voucher_code }}</p>
+                            </div>
+                        @else
+                            <div class="p-4 bg-gray-100 text-gray-600 rounded-md">
+                                <p>Pembayaran belum selesai atau gagal. Tidak ada aksi yang bisa dilakukan.</p>
+                            </div>
+                        @endif
+                    </div>
                 </div>
                 <div class="p-6 border-t">
                     <a href="{{ route('admin.transactions.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Kembali ke Daftar Transaksi</a>

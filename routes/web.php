@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\GameController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VoucherController;
 
 // Halaman Utama (Browse Games)
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -37,6 +38,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('users', UserController::class)->only(['index', 'destroy']);
     Route::resource('banners', BannerController::class);
     Route::resource('transactions', AdminTransactionController::class)->only(['index', 'show']);
+    Route::resource('vouchers', VoucherController::class)->except(['show']);
+    Route::post('transactions/{transaction}/send-voucher', [AdminTransactionController::class, 'sendVoucher'])->name('transactions.sendVoucher');
+
 });
 
 
