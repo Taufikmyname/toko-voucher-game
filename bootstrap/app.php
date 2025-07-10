@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
         ]);
+        // Tambahkan ini untuk mengecualikan rute callback dari CSRF
+        $middleware->validateCsrfTokens(except: [
+            'midtrans/callback' 
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -80,6 +80,13 @@ class TransactionController extends Controller
 
         if ($hashed == $request->signature_key) {
             $transaction = Transaction::where('order_id', $request->order_id)->first();
+            
+            if (!$transaction) {
+                // Jika transaksi tidak ditemukan, kirim respons OK agar Midtrans berhenti mengirim notifikasi
+                // Ini penting untuk menangani notifikasi tes dari dashboard Midtrans
+                return response()->json(['message' => 'Transaction not found.'], 200);
+            }
+            
             if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
                 $transaction->status = 'success';
             } elseif ($request->transaction_status == 'pending') {
