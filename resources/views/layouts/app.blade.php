@@ -97,8 +97,21 @@
               .catch(error => console.error('Error saving token:', error));
         }
 
-        // Minta izin notifikasi saat halaman dimuat
-        requestNotificationPermission();
+        // Coba minta izin saat halaman dimuat, tapi jangan memaksa.
+        // Browser modern mungkin memblokir ini jika tidak dipicu oleh aksi pengguna.
+        if (Notification.permission === 'default') {
+             console.log('Notification permission is default. Waiting for user action.');
+        } else if(Notification.permission === 'granted') {
+             requestNotificationPermission();
+        }
+
+        // Event listener untuk tombol manual
+        document.addEventListener('DOMContentLoaded', () => {
+            const enableNotifButton = document.getElementById('enable-notifications-button');
+            if(enableNotifButton) {
+                enableNotifButton.addEventListener('click', requestNotificationPermission);
+            }
+        });
 
         messaging.onMessage((payload) => {
             console.log('Message received. ', payload);

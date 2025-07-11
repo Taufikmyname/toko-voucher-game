@@ -45,9 +45,9 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            {{-- <x-dropdown-link :href="route('profile.edit')">
+                            <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Profile') }}
-                            </x-dropdown-link> --}}
+                            </x-dropdown-link>
 
                             @if(Auth::user()->is_admin)
                                 <div class="border-t border-gray-200"></div>
@@ -140,9 +140,9 @@
                 </div>
 
                 <div class="mt-3 space-y-1">
-                    {{-- <x-responsive-nav-link :href="route('profile.edit')">
+                    <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}
-                    </x-responsive-nav-link> --}}
+                    </x-responsive-nav-link>
 
                     <!-- Authentication -->
                     <form method="POST" action="{{ route('logout') }}">
