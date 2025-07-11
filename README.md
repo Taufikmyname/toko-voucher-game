@@ -59,3 +59,18 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+
+## Cara mengaktifkan:
+npm run dev
+
+php artisan serve
+
+aktifkan ngrok (ngrok.exe) lalu sesuaikan portnya (biasanya 8000 untuk local host)
+
+(link ngrok)/midtrans/callback pada notification url (payment notification url) di website midtrans
+
+link sanbox
+https://simulator.sandbox.midtrans.com/v2/qris/index
+https://dashboard.sandbox.midtrans.com/settings/payment/notification

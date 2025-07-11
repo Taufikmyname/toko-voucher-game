@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             try {
                 $banners = Banner::where('is_active', true)->latest()->get();
-                $view->with('banners', $banners);
+                View::share('banners', $banners);
                 
                 if (Auth::check()) {
                     $unreadMessages = Inbox::where('user_id', Auth::id())->where('is_read', false)->count();
