@@ -16,6 +16,12 @@
                         {{ __('Beranda') }}
                     </x-nav-link>
                     @auth
+                        <x-nav-link :href="route('inbox.index')" :active="request()->routeIs('inbox.index')" class="relative">
+                            {{ __('Kotak Masuk') }}
+                            @if($unreadMessages > 0)
+                                <span class="absolute top-3 -right-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full"></span>
+                            @endif
+                        </x-nav-link>
                         <x-nav-link :href="route('my.transactions')" :active="request()->routeIs('my.transactions')">
                             {{ __('Transaksi Saya') }}
                         </x-nav-link>
@@ -60,14 +66,17 @@
                                 <x-dropdown-link :href="route('admin.products.index')">
                                     {{ __('Manajemen Produk') }}
                                 </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.vouchers.index')">
+                                    {{ __('Manajemen Stok Voucher') }}
+                                </x-dropdown-link>
                                 <x-dropdown-link :href="route('admin.transactions.index')">
                                     {{ __('Manajemen Transaksi') }}
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('admin.users.index')">
                                     {{ __('Manajemen Pengguna') }}
                                 </x-dropdown-link>
-                                <x-dropdown-link :href="route('admin.vouchers.index')">
-                                    {{ __('Manajemen Stok Voucher') }}
+                                <x-dropdown-link :href="route('admin.promo-notifications.create')">
+                                    {{ __('Kirim Notifikasi Promo') }}
                                 </x-dropdown-link>
                             @endif
 
@@ -110,6 +119,12 @@
                 {{ __('Beranda') }}
             </x-responsive-nav-link>
              @auth
+                <x-responsive-nav-link :href="route('inbox.index')" :active="request()->routeIs('inbox.index')" class="relative">
+                    {{ __('Kotak Masuk') }}
+                    @if($unreadMessages > 0)
+                        <span class="absolute top-1 right-4 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{{ $unreadMessages }}</span>
+                    @endif
+                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('my.transactions')" :active="request()->routeIs('my.transactions')">
                     {{ __('Transaksi Saya') }}
                 </x-responsive-nav-link>
@@ -159,11 +174,17 @@
                         <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')">
                             {{ __('Manajemen Produk') }}
                         </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.vouchers.index')" :active="request()->routeIs('admin.vouchers.*')">
+                            {{ __('Manajemen Stok Voucher') }}
+                        </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('admin.transactions.index')" :active="request()->routeIs('admin.transactions.*')">
                             {{ __('Manajemen Transaksi') }}
                         </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Manajemen Pengguna') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.promo-notifications.create')" :active="request()->routeIs('admin.promo-notifications.*')">
+                            {{ __('Kirim Notifikasi Promo') }}
                         </x-responsive-nav-link>
                     </div>
                 </div>

@@ -41,7 +41,75 @@
         </main>
     </div>
     
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    
+    @auth
+    <script>
+        // Konfigurasi Firebase diambil dari file config/services.php yang membaca .env
+        const firebaseConfig = {
+            apiKey: "{{ config('services.firebase.api_key') }}",
+            authDomain: "{{ config('services.firebase.auth_domain') }}",
+            projectId: "{{ config('services.firebase.project_id') }}",
+            storageBucket: "{{ config('services.firebase.storage_bucket') }}",
+            messagingSenderId: "{{ config('services.firebase.messaging_sender_id') }}",
+            appId: "{{ config('services.firebase.app_id') }}"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        function requestNotificationPermission() {
+            console.log('Requesting permission...');
+            Notification.requestPermission().then((permission) => {
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                    
+                    // Get token
+                    messaging.getToken({ vapidKey: "{{ config('services.firebase.vapid_key') }}" }).then((currentToken) => {
+                        if (currentToken) {
+                            console.log('FCM Token:', currentToken);
+                            saveTokenToServer(currentToken);
+                        } else {
+                            console.log('No registration token available. Request permission to generate one.');
+                        }
+                    }).catch((err) => {
+                        console.log('An error occurred while retrieving token. ', err);
+                    });
+                } else {
+                    console.log('Unable to get permission to notify.');
+                }
+            });
+        }
+
+        function saveTokenToServer(token) {
+            fetch('/fcm-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ token: token })
+            }).then(response => response.json())
+              .then(data => console.log(data.message))
+              .catch(error => console.error('Error saving token:', error));
+        }
+
+        // Minta izin notifikasi saat halaman dimuat
+        requestNotificationPermission();
+
+        messaging.onMessage((payload) => {
+            console.log('Message received. ', payload);
+            // Tampilkan notifikasi di foreground
+            const notification = new Notification(payload.notification.title, {
+                body: payload.notification.body,
+                icon: payload.notification.icon
+            });
+        });
+    </script>
+    @endauth
     @stack('scripts')
 </body>
 </html>
