@@ -94,28 +94,22 @@ class TransactionController extends Controller
                           ->first();
 
         if (!$voucher) {
-            // Jika stok habis, catat error dan kirim notifikasi ke admin (opsional)
             Log::error('Stok voucher habis untuk produk ID: ' . $transaction->product_id);
-            // Di sini Anda bisa menambahkan notifikasi ke admin
             return;
         }
 
-        // Gunakan transaksi database untuk memastikan konsistensi data
         DB::transaction(function () use ($transaction, $voucher) {
-            // Update transaksi dengan kode voucher
             $transaction->voucher_code = $voucher->code;
             $transaction->save();
 
-            // Tandai voucher sebagai sudah digunakan
             $voucher->is_used = true;
             $voucher->save();
 
-            // Kirim email ke pelanggan
+            // Kirim email ke pelanggan berdasarkan email yang diisi di form
             Mail::to($transaction->customer_email)->send(new VoucherSentMail($transaction));
 
             // Jika pelanggan adalah user terdaftar, kirim notifikasi tambahan
             if ($transaction->user) {
-                // Buat pesan di Kotak Masuk
                 Inbox::create([
                     'user_id' => $transaction->user_id,
                     'title' => 'Voucher Anda Telah Dikirim!',
@@ -124,17 +118,11 @@ class TransactionController extends Controller
                     'link' => route('transaction.show', $transaction->order_id),
                 ]);
 
-                // Kirim Notifikasi FCM jika user memiliki token
                 if ($transaction->user->fcm_token) {
                     try {
                         $messaging = app('firebase.messaging');
-                        $notification = FcmNotification::create(
-                            'Voucher Terkirim!',
-                            'Kode voucher untuk pesanan ' . $transaction->order_id . ' telah dikirim.'
-                        );
-                        $message = CloudMessage::withTarget('token', $transaction->user->fcm_token)
-                            ->withNotification($notification);
-                        
+                        $notification = FcmNotification::create('Voucher Terkirim!', 'Kode voucher untuk pesanan ' . $transaction->order_id . ' telah dikirim.');
+                        $message = CloudMessage::withTarget('token', $transaction->user->fcm_token)->withNotification($notification);
                         $messaging->send($message);
                     } catch (\Exception $e) {
                         Log::error('Gagal mengirim FCM: ' . $e->getMessage());
