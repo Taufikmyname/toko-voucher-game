@@ -178,4 +178,44 @@ class TransactionController extends Controller
         return response()->json(['message' => 'Notification handled.'], 200);
     }
 
+        public function retryPayment(Request $request, Transaction $transaction)
+    {
+        // Pastikan hanya pemilik transaksi yang bisa mencoba lagi
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Pastikan statusnya memungkinkan untuk dicoba lagi
+        if (!in_array($transaction->status, ['pending', 'failed', 'expired'])) {
+            return response()->json(['error' => 'Transaksi ini tidak dapat dibayar ulang.'], 400);
+        }
+
+        // Buat parameter untuk Midtrans
+        $midtrans_params = [
+            'transaction_details' => [
+                'order_id' => $transaction->order_id,
+                'gross_amount' => $transaction->total_price,
+            ],
+            'item_details' => [[
+                'id' => $transaction->product->id,
+                'price' => $transaction->total_price,
+                'quantity' => 1,
+                'name' => $transaction->product->name . ' - ' . $transaction->product->game->name,
+            ]],
+            'customer_details' => [
+                'first_name' => $transaction->user->name ?? 'Guest',
+                'email' => $transaction->customer_email,
+                'phone' => $transaction->customer_phone,
+            ]
+        ];
+
+        try {
+            $snapToken = Snap::getSnapToken($midtrans_params);
+            $transaction->snap_token = $snapToken;
+            $transaction->save();
+            return response()->json(['snap_token' => $snapToken]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

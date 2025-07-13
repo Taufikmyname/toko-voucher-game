@@ -5,6 +5,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\FcmController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GameController;
@@ -13,18 +14,6 @@ use App\Http\Controllers\Admin\PromoNotificationController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
-use App\Http\Controllers\ProfileController; // <-- Tambahkan ini
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 // == RUTE PUBLIK & PENGGUNA ==
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -42,6 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Rute untuk coba bayar ulang
+    Route::post('/transaction/{transaction}/retry', [TransactionController::class, 'retryPayment'])->name('transaction.retry');
 });
 
 // Callback dari Midtrans (tanpa middleware 'web')
