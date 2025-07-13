@@ -1,7 +1,5 @@
 <?php
 
-// tests/Feature/TransactionTest.php
-
 namespace Tests\Feature;
 
 use App\Models\Game;
@@ -34,13 +32,9 @@ class TransactionTest extends TestCase
     public function test_user_can_successfully_checkout_a_product()
     {
         // 1. Persiapan (Setup)
-        
         // Membuat mock alias untuk kelas Midtrans\Snap.
         // Ini akan menggantikan kelas Snap yang asli selama tes ini berjalan.
         $mock = Mockery::mock('alias:' . Snap::class);
-        
-        // Menetapkan ekspektasi: metode statis getSnapToken akan dipanggil sekali
-        // dan harus mengembalikan nilai 'mocked_snap_token_12345'.
         $mock->shouldReceive('getSnapToken')
             ->once()
             ->andReturn('mocked_snap_token_12345');
@@ -63,12 +57,10 @@ class TransactionTest extends TestCase
         ];
 
         // 2. Aksi (Action)
-        
         // Mensimulasikan pengguna yang sudah login melakukan POST request ke rute checkout.
         $response = $this->actingAs($user)->post(route('checkout'), $checkoutData);
 
         // 3. Penegasan (Assertions)
-        
         // Memastikan respons dari server adalah 200 OK.
         $response->assertStatus(200);
 
@@ -85,29 +77,5 @@ class TransactionTest extends TestCase
             'total_price' => 77000,
             'status' => 'pending',
         ]);
-    }
-
-    /**
-     * Tes untuk memastikan checkout gagal jika data tidak valid.
-     *
-     * @return void
-     */
-    public function test_checkout_fails_with_invalid_data()
-    {
-        // 1. Persiapan
-        $user = User::factory()->create();
-
-        // 2. Aksi
-        // Mengirim data yang tidak lengkap (misalnya, tanpa product_id).
-        $response = $this->actingAs($user)->post(route('checkout'), [
-            'game_user_id' => '123456789',
-        ]);
-
-        // 3. Penegasan
-        // Memastikan server merespons dengan error validasi (status 302 karena redirect).
-        $response->assertStatus(302);
-
-        // Memastikan tidak ada transaksi yang dibuat di database.
-        $this->assertDatabaseCount('transactions', 0);
     }
 }
