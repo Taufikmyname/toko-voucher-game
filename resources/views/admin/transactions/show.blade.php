@@ -73,6 +73,14 @@
                             <dt class="text-sm font-medium text-gray-500">Email</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $transaction->user->email ?? 'Tidak terdaftar' }}</dd>
                         </div>
+                                                <div>
+                            <dt class="text-sm font-medium text-gray-500">Email</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $transaction->customer_email }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Nomor HP</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $transaction->customer_phone }}</dd>
+                        </div>
                     </div>
 
                     <!-- Bagian Aksi Admin -->

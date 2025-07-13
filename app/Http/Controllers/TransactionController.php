@@ -25,6 +25,8 @@ class TransactionController extends Controller
             'product_id' => 'required|exists:products,id',
             'game_user_id' => 'required|string|max:100',
             'zone_id' => 'nullable|string|max:50',
+            'customer_email' => 'required|email',
+            'customer_phone' => 'required|string|max:20',
         ]);
 
         $product = Product::findOrFail($request->product_id);
@@ -36,6 +38,8 @@ class TransactionController extends Controller
             'product_id' => $product->id,
             'game_user_id' => $request->game_user_id,
             'zone_id' => $request->zone_id,
+            'customer_email' => $request->customer_email,
+            'customer_phone' => $request->customer_phone,
             'total_price' => $product->price,
             'status' => 'pending',
         ]);
@@ -53,7 +57,8 @@ class TransactionController extends Controller
             ]],
             'customer_details' => [
                 'first_name' => Auth::check() ? Auth::user()->name : 'Guest',
-                'email' => Auth::check() ? Auth::user()->email : 'guest@example.com',
+                'email' => $request->customer_email,
+                'phone' => $request->customer_phone,
             ]
         ];
 

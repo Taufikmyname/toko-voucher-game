@@ -5,20 +5,36 @@
                 <h2 class="text-2xl font-semibold mb-4">Top Up {{ $game->name }}</h2>
                 
                 <form id="payment-form">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <!-- Kolom Kiri: Info Game & User ID -->
                         <div>
                             <img src="{{ asset('storage/' . $game->thumbnail) }}" alt="{{ $game->name }}" class="w-full rounded-lg mb-4">
-                            <h3 class="font-semibold mb-2">1. Masukkan User ID</h3>
-                            <div class="flex gap-2">
-                                <input type="text" name="game_user_id" id="game_user_id" placeholder="User ID" class="w-full rounded-md border-gray-300" required>
-                                <input type="text" name="zone_id" id="zone_id" placeholder="Zone ID (jika ada)" class="w-1/2 rounded-md border-gray-300">
+                            
+                            <h3 class="font-semibold mb-2">1. Masukkan Data Akun</h3>
+                            <div class="space-y-4">
+                                <div class="flex gap-2">
+                                    <input type="text" name="game_user_id" id="game_user_id" placeholder="User ID" class="w-full rounded-md border-gray-300" required>
+                                    <input type="text" name="zone_id" id="zone_id" placeholder="Zone ID (jika ada)" class="w-1/2 rounded-md border-gray-300">
+                                </div>
+                            </div>
+                            
+                            <h3 class="font-semibold mb-2 mt-6">2. Lengkapi Data Kontak</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="customer_email" class="sr-only">Email</label>
+                                    <input type="email" name="customer_email" id="customer_email" placeholder="Alamat Email" class="w-full rounded-md border-gray-300" value="{{ auth()->user()->email ?? '' }}" required>
+                                    <p class="text-xs text-gray-500 mt-1">Kami akan mengirimkan bukti pembayaran ke email ini.</p>
+                                </div>
+                                <div>
+                                    <label for="customer_phone" class="sr-only">Nomor HP</label>
+                                    <input type="tel" name="customer_phone" id="customer_phone" placeholder="Nomor HP (Contoh: 08123456789)" class="w-full rounded-md border-gray-300" required>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Kolom Kanan: Pilih Produk -->
                         <div>
-                            <h3 class="font-semibold mb-2">2. Pilih Nominal Top Up</h3>
+                            <h3 class="font-semibold mb-2">3. Pilih Nominal Top Up</h3>
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="product-list">
                                 @foreach($products as $product)
                                 <label class="border rounded-lg p-4 text-center cursor-pointer has-[:checked]:bg-blue-500 has-[:checked]:text-white has-[:checked]:border-blue-500 transition-all">
@@ -30,9 +46,8 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="mt-8">
-                        <h3 class="font-semibold mb-2">3. Lakukan Pembayaran</h3>
+                        <h3 class="font-semibold mb-2">4. Lakukan Pembayaran</h3>
                         <button type="submit" id="pay-button" class="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-all disabled:bg-gray-400">
                             Beli Sekarang
                         </button>
