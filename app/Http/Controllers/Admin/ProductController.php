@@ -9,15 +9,29 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('game')->latest()->paginate(10);
-        return view('admin.products.index', compact('products'));
+        $query = Product::with('game')->latest();
+
+        // Filter berdasarkan game
+        if ($request->filled('game_id')) {
+            $query->where('game_id', $request->game_id);
+        }
+    
+        // Filter berdasarkan status
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'aktif' ? 1 : 0);
+        }
+    
+        $products = $query->paginate(10)->withQueryString();
+        $games = Game::orderBy('name')->get();
+    
+        return view('admin.products.index', compact('products', 'games'));
     }
 
     public function create()
     {
-        $games = Game::where('is_active', true)->get();
+        $games = Game::where('is_active', true)->orderBy('name')->get();
         return view('admin.products.create', compact('games'));
     }
 
@@ -37,7 +51,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $games = Game::where('is_active', true)->get();
+        $games = Game::where('is_active', true)->orderBy('name')->get();
         return view('admin.products.edit', compact('product', 'games'));
     }
 

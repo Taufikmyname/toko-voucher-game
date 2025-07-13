@@ -2,10 +2,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Game;
 use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
-use App\Models\Game;
 
 class VoucherController extends Controller
 {
@@ -15,11 +15,7 @@ class VoucherController extends Controller
 
         // Terapkan filter status
         if ($request->filled('status')) {
-            if ($request->status == 'tersedia') {
-                $query->where('is_used', false);
-            } elseif ($request->status == 'terpakai') {
-                $query->where('is_used', true);
-            }
+            $query->where('is_used', $request->status === 'terpakai' ? 1 : 0);
         }
 
         // Terapkan filter game
@@ -31,7 +27,7 @@ class VoucherController extends Controller
 
         $vouchers = $query->paginate(20)->withQueryString();
         $games = Game::orderBy('name')->get();
-
+        
         return view('admin.vouchers.index', compact('vouchers', 'games'));
     }
 
