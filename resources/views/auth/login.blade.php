@@ -43,5 +43,15 @@
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
+        
+        <!-- Tautan ke Halaman Register -->
+        <div class="text-center mt-4">
+            <p class="text-sm text-gray-600">
+                {{ __('Belum punya akun?') }}
+                <a class="underline text-sm text-indigo-600 hover:text-indigo-900" href="{{ route('register') }}">
+                    {{ __('Daftar di sini') }}
+                </a>
+            </p>
+        </div>
     </form>
 </x-guest-layout>
