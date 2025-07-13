@@ -1,12 +1,20 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Inbox;
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Models\Voucher;
+use App\Mail\VoucherSentMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Midtrans\Config;
 use Midtrans\Snap;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification as FcmNotification;
 
 class TransactionController extends Controller
 {
@@ -78,29 +86,96 @@ class TransactionController extends Controller
         return view('pages.transaction-show', compact('transaction'));
     }
 
+    private function sendVoucher(Transaction $transaction)
+    {
+        // Cari voucher yang tersedia untuk produk ini
+        $voucher = Voucher::where('product_id', $transaction->product_id)
+                          ->where('is_used', false)
+                          ->first();
+
+        if (!$voucher) {
+            // Jika stok habis, catat error dan kirim notifikasi ke admin (opsional)
+            Log::error('Stok voucher habis untuk produk ID: ' . $transaction->product_id);
+            // Di sini Anda bisa menambahkan notifikasi ke admin
+            return;
+        }
+
+        // Gunakan transaksi database untuk memastikan konsistensi data
+        DB::transaction(function () use ($transaction, $voucher) {
+            // Update transaksi dengan kode voucher
+            $transaction->voucher_code = $voucher->code;
+            $transaction->save();
+
+            // Tandai voucher sebagai sudah digunakan
+            $voucher->is_used = true;
+            $voucher->save();
+
+            // Kirim email ke pelanggan
+            Mail::to($transaction->customer_email)->send(new VoucherSentMail($transaction));
+
+            // Jika pelanggan adalah user terdaftar, kirim notifikasi tambahan
+            if ($transaction->user) {
+                // Buat pesan di Kotak Masuk
+                Inbox::create([
+                    'user_id' => $transaction->user_id,
+                    'title' => 'Voucher Anda Telah Dikirim!',
+                    'body' => 'Kode voucher untuk pesanan ' . $transaction->order_id . ' adalah: ' . $transaction->voucher_code,
+                    'type' => 'voucher',
+                    'link' => route('transaction.show', $transaction->order_id),
+                ]);
+
+                // Kirim Notifikasi FCM jika user memiliki token
+                if ($transaction->user->fcm_token) {
+                    try {
+                        $messaging = app('firebase.messaging');
+                        $notification = FcmNotification::create(
+                            'Voucher Terkirim!',
+                            'Kode voucher untuk pesanan ' . $transaction->order_id . ' telah dikirim.'
+                        );
+                        $message = CloudMessage::withTarget('token', $transaction->user->fcm_token)
+                            ->withNotification($notification);
+                        
+                        $messaging->send($message);
+                    } catch (\Exception $e) {
+                        Log::error('Gagal mengirim FCM: ' . $e->getMessage());
+                    }
+                }
+            }
+        });
+    }
+
     public function callback(Request $request)
     {
         $serverKey = config('services.midtrans.server_key');
         $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
 
         if ($hashed == $request->signature_key) {
-            $transaction = Transaction::where('order_id', $request->order_id)->first();
-            
+            $transaction = Transaction::with('user', 'product')->where('order_id', $request->order_id)->first();
+
             if (!$transaction) {
-                // Jika transaksi tidak ditemukan, kirim respons OK agar Midtrans berhenti mengirim notifikasi
-                // Ini penting untuk menangani notifikasi tes dari dashboard Midtrans
                 return response()->json(['message' => 'Transaction not found.'], 200);
             }
-            
-            if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
-                $transaction->status = 'success';
-            } elseif ($request->transaction_status == 'pending') {
-                $transaction->status = 'pending';
-            } else {
-                $transaction->status = 'failed';
+
+            // Hanya proses jika statusnya belum sukses
+            if ($transaction->status === 'pending') {
+                if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+                    $transaction->status = 'success';
+                    $transaction->payment_method = $request->payment_type;
+                    $transaction->save();
+
+                    // Panggil metode untuk mengirim voucher
+                    $this->sendVoucher($transaction);
+                } elseif ($request->transaction_status == 'expire') {
+                    $transaction->status = 'expired';
+                    $transaction->save();
+                } elseif ($request->transaction_status == 'deny') {
+                    $transaction->status = 'failed';
+                    $transaction->save();
+                }
             }
-            $transaction->payment_method = $request->payment_type;
-            $transaction->save();
         }
+
+        return response()->json(['message' => 'Notification handled.'], 200);
     }
+
 }

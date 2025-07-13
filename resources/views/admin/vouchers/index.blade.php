@@ -11,6 +11,32 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <!-- Filter Form -->
+                <form method="GET" action="{{ route('admin.vouchers.index') }}" class="mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700">Filter Status:</label>
+                            <select name="status" id="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option value="all" @selected(request('status') == 'all')>Semua</option>
+                                <option value="tersedia" @selected(request('status') == 'tersedia')>Tersedia</option>
+                                <option value="terpakai" @selected(request('status') == 'terpakai')>Terpakai</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="game_id" class="block text-sm font-medium text-gray-700">Filter Game:</label>
+                            <select name="game_id" id="game_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option value="">Semua Game</option>
+                                @foreach ($games as $game)
+                                    <option value="{{ $game->id }}" @selected(request('game_id') == $game->id)>{{ $game->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <button type="submit" class="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Filter</button>
+                        </div>
+                    </div>
+                </form>
+
                 <table class="min-w-full bg-white">
                     <thead>
                         <tr>
@@ -27,9 +53,13 @@
                             <td class="py-2 px-4 border-b">{{ $voucher->product->game->name }} - {{ $voucher->product->name }}</td>
                             <td class="py-2 px-4 border-b">
                                 @if($voucher->is_used)
-                                    <span class="text-red-500">Terpakai</span>
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        Terpakai
+                                    </span>
                                 @else
-                                    <span class="text-green-500">Tersedia</span>
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        Tersedia
+                                    </span>
                                 @endif
                             </td>
                             <td class="py-2 px-4 border-b">
@@ -42,7 +72,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="text-center py-4">Belum ada stok voucher.</td>
+                            <td colspan="4" class="text-center py-4">Tidak ada data voucher yang cocok.</td>
                         </tr>
                         @endforelse
                     </tbody>
