@@ -14,7 +14,6 @@
                             <div class="space-y-4">
                                 <div class="flex gap-2">
                                     <input type="text" name="game_user_id" id="game_user_id" placeholder="User ID" class="w-full rounded-md border-gray-300" required>
-                                    <input type="text" name="zone_id" id="zone_id" placeholder="Zone ID (jika ada)" class="w-1/2 rounded-md border-gray-300">
                                 </div>
                             </div>
                             

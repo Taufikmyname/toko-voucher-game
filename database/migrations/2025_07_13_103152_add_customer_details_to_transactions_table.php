@@ -7,7 +7,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->string('customer_email')->nullable()->after('zone_id');
+            $table->string('customer_email')->nullable()->after('game_user_id');
             $table->string('customer_phone')->nullable()->after('customer_email');
         });
     }

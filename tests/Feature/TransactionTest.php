@@ -51,7 +51,6 @@ class TransactionTest extends TestCase
         $checkoutData = [
             'product_id' => $product->id,
             'game_user_id' => '123456789',
-            'zone_id' => '9876',
             'customer_email' => 'test@example.com',
             'customer_phone' => '081234567890',
         ];

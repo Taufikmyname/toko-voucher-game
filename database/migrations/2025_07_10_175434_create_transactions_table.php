@@ -11,7 +11,6 @@ return new class extends Migration {
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('product_id')->constrained();
             $table->string('game_user_id');
-            $table->string('zone_id')->nullable();
             $table->integer('total_price');
             $table->enum('status', ['pending', 'success', 'failed', 'expired'])->default('pending');
             $table->string('payment_method')->nullable();

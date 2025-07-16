@@ -28,12 +28,6 @@
                             <dt class="text-sm font-medium text-gray-500">Game User ID</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $transaction->game_user_id }}</dd>
                         </div>
-                        @if($transaction->zone_id)
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Zone ID</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $transaction->zone_id }}</dd>
-                        </div>
-                        @endif
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Tanggal Transaksi</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $transaction->created_at->format('d F Y, H:i:s') }}</dd>
