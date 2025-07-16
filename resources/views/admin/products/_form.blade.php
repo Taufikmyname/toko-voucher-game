@@ -30,10 +30,6 @@
     <input type="number" name="price" id="price" value="{{ old('price', $product->price ?? '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
 </div>
 
-<div class="mb-4">
-    <label for="api_product_code" class="block text-sm font-medium text-gray-700">Kode Produk API (Opsional)</label>
-    <input type="text" name="api_product_code" id="api_product_code" value="{{ old('api_product_code', $product->api_product_code ?? '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-</div>
 
 <div class="mb-4">
     <label for="is_active" class="flex items-center">

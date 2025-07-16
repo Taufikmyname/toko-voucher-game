@@ -41,7 +41,6 @@ class ProductController extends Controller
             'game_id' => 'required|exists:games,id',
             'name' => 'required|string|max:255',
             'price' => 'required|integer|min:0',
-            'api_product_code' => 'nullable|string|max:255',
         ]);
 
         Product::create($request->all());
@@ -61,7 +60,6 @@ class ProductController extends Controller
             'game_id' => 'required|exists:games,id',
             'name' => 'required|string|max:255',
             'price' => 'required|integer|min:0',
-            'api_product_code' => 'nullable|string|max:255',
         ]);
 
         $productData = $request->all();

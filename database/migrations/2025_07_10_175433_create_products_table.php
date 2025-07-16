@@ -10,7 +10,6 @@ return new class extends Migration {
             $table->foreignId('game_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->integer('price');
-            $table->string('api_product_code')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
