@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('body');
-            $table->string('type')->default('info'); // 'info', 'promo', 'voucher'
+            $table->string('type')->default('info');
             $table->boolean('is_read')->default(false);
             $table->string('link')->nullable();
             $table->timestamps();

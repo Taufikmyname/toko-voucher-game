@@ -9,7 +9,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('thumbnail')->comment('Path to image');
+            $table->string('thumbnail');
             $table->string('category')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

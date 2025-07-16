@@ -8,9 +8,9 @@ return new class extends Migration {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('game_id')->constrained()->onDelete('cascade');
-            $table->string('name')->comment('e.g., 100 Diamonds');
+            $table->string('name');
             $table->integer('price');
-            $table->string('api_product_code')->nullable()->comment('For 3rd party API integration');
+            $table->string('api_product_code')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
