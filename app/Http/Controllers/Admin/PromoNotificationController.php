@@ -3,10 +3,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Inbox; // <-- Tambahkan ini
+use App\Models\Inbox;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase\Messaging\Notification;
+// Beri nama alias untuk menghindari konflik
+use Kreait\Firebase\Messaging\Notification as FcmNotification;
 
 class PromoNotificationController extends Controller
 {
@@ -42,7 +43,8 @@ class PromoNotificationController extends Controller
         $usersWithToken = $users->whereNotNull('fcm_token')->pluck('fcm_token')->all();
         if (!empty($usersWithToken)) {
             $messaging = app('firebase.messaging');
-            $notification = Notification::create($request->title, $request->body);
+            // Gunakan nama alias di sini
+            $notification = FcmNotification::create($request->title, $request->body);
             $message = CloudMessage::new()->withNotification($notification);
             $messaging->sendMulticast($message, $usersWithToken);
         }
