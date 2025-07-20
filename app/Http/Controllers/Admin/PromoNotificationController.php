@@ -49,6 +49,6 @@ class PromoNotificationController extends Controller
             $messaging->sendMulticast($message, $usersWithToken);
         }
 
-        return back()->with('success', "Notifikasi promo berhasil dikirim ke " . $users->count() . " pengguna.");
+        return redirect()->route('admin.promo-notifications.create')->with('success', "Notifikasi promo berhasil dikirim ke " . $users->count() . " pengguna.");
     }
 }
